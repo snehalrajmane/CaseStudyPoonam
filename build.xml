@@ -1,0 +1,63 @@
+<project name="Vulnerability Management System" default="all">
+  <target name="all" depends="init, clean, compile, war, build"/>
+	<target name='init'>
+		<mkdir dir="app"/>
+		<property name='app.name' value='CaseStudyVulnerability'/>
+		<property name='src.dir' location='src'/>
+		 <property name='lib.dir' location='lib'/>
+		<property name='target1.dir' location='target'/> 
+		<property name='app.dir' location='app'/>
+		<property name='classes.dir' location='build/classes'/>
+		<property name='web.dir' location='WebContent'/>
+	 	<property name='test.dir' location='test'/> 
+	</target>
+
+	<target name='clean' depends='init' description='Use for a clean build'>
+		<delete dir="${target1.dir}" quiet="true" />
+	</target>
+	
+	<target name='compile' depends='clean'>
+		<javac srcdir='${src.dir}' destdir='${classes.dir}' includeantruntime="false" classpath='${lib.dir}/junit-4.12.jar'></javac>
+	</target>
+
+	<target name='war' depends='compile'>
+		<war destFile='${app.dir}/${app.name}.war' webxml='${web.dir}/WEB-INF/web.xml'>
+		  <classes dir='${classes.dir}'/>
+		  <fileset dir='${web.dir}' excludes='WEB-INF/web.xml' />
+		</war>
+	</target>
+
+	<target name='build' depends='war' description='compile and create the war' />
+
+	 <target name="test" depends="compile">
+	<mkdir dir="target/test-classes"/>
+        <javac srcdir='${test.dir}' includeantruntime="false" destdir="target/test-classes">
+            <classpath>
+                <pathelement location="build/classes"/>
+                <pathelement location='${lib.dir}/junit-4.12.jar'/>
+            </classpath>
+        </javac> 
+
+        <mkdir dir="target/test-results"/>
+        <junit haltonfailure="no" printsummary="on">
+            <classpath >
+                <pathelement location="build/classes"/>
+                <pathelement location="lib/junit-4.12.jar"/>
+                <pathelement location="target/test-classes"/>
+            </classpath>
+            <formatter type="brief" usefile="false"/>
+            <formatter type="xml" />
+            <batchtest todir="target/test-results" >
+                <fileset dir="target/test-classes" includes="**/*Test*.java"/>
+            </batchtest>
+        </junit>
+    </target>
+	
+	<target name="docs" depends="compile">
+		<javadoc packagenames="src" sourcepath="${src.dir}" destdir="${target1.dir}/docs">
+			<fileset dir="${src.dir}">
+				<include name="**" />
+			</fileset>
+	    </javadoc>
+ 	</target>  
+</project>
